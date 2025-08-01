@@ -1,9 +1,115 @@
-// import React, { useState, useEffect } from 'react';
+
+// import React, { useState, useEffect, useCallback, memo } from 'react';
 // import { Calendar, MapPin, Users, Home, Calculator, User, Wifi, Battery, Signal, PhoneCall, Globe, Sparkles, Facebook, Instagram, Phone, Mail, ChevronDown, ChevronUp, X, ChevronLeft, Trash2, ChevronRight, Menu, Check } from 'lucide-react';
 // import { differenceInDays, parse } from 'date-fns';
 
-// // Language translations object
-// const translations = {
+// // Define a type for a traveler
+// interface Traveler {
+//   id: number;
+//   firstName: string;
+//   lastName: string;
+//   age: string;
+// }
+
+// // Define the keys for the translation object to ensure type safety
+// interface TranslationKeys {
+//   insuranceTitle: string;
+//   firstTripDate: string;
+//   lastTripDate: string;
+//   amountOfDays: string;
+//   travelers: string;
+//   years: string;
+//   calculate: string;
+//   yourContract: string;
+//   whatIsIncluded: string;
+//   insuranceCoverage: string;
+//   annualInsurancePolicy: string;
+//   location: string;
+//   medicalExpenses: string;
+//   emergencyEvacuation: string;
+//   repatriation: string;
+//   personalLiability: string;
+//   sportsCoverage: string;
+//   covid19: string;
+//   calculateOptions: string;
+//   autoInsurance: string;
+//   forVehicleTravel: string;
+//   flightInsurance: string;
+//   forAirTravel: string;
+//   medicalPlus: string;
+//   extendedCoverage: string;
+//   sportsAdventure: string;
+//   forActiveTravel: string;
+//   travelCostCalculator: string;
+//   insurancePremium: string;
+//   visaFeeEstimate: string;
+//   serviceFee: string;
+//   totalEstimate: string;
+//   getDetailedQuote: string;
+//   travelTrailerOptions: string;
+//   compactTrailer: string;
+//   upTo2People: string;
+//   perWeek: string;
+//   familyTrailer: string;
+//   upTo4People: string;
+//   luxuryTrailer: string;
+//   premiumFeatures: string;
+//   addTrailerToPackage: string;
+//   home: string;
+//   profile: string;
+//   partnership: string;
+//   llmTitle: string;
+//   llmDescription: string;
+//   generateItinerary: string;
+//   getVisaInfo: string;
+//   loading: string;
+//   error: string;
+//   itineraryHeader: string;
+//   visaInfoModalTitle: string;
+//   close: string;
+//   modalVisaInfo: string;
+//   coverageTitle: string;
+//   minPrice: string;
+//   fastAndEasy: string;
+//   policyToEmail: string;
+//   support247: string;
+//   visaApplication: string;
+//   detailedMedicalRisks: string;
+//   reimbursement: string;
+//   homeVisits: string;
+//   clinicVisits: string;
+//   hospitalization: string;
+//   stomatology: string;
+//   covid19Treatment: string;
+//   aboutUs: string;
+//   aboutCompany: string;
+//   contactDetails: string;
+//   faq: string;
+//   whatToDo: string;
+//   downloadDocuments: string;
+//   footerAddress: string;
+//   footerPhone: string;
+//   footerMail: string;
+//   footerCopyright: string;
+//   additionalCoverages: string;
+//   downloadPolicy: string;
+//   goToCalculator: string;
+//   backToMain: string;
+//   addTraveler: string;
+//   firstName: string;
+//   lastName: string;
+//   age: string;
+//   totalCost: string;
+//   travelerName: string;
+//   travelerAge: string;
+//   actions: string;
+//   visitRussia: string;
+//   annualDays: string;
+//   dayOptions: string;
+// }
+
+// // Language translations object with explicit types
+// const translations: { [key: string]: TranslationKeys } = {
 //   en: {
 //     insuranceTitle: 'Insurance for visa to Russia',
 //     firstTripDate: 'The first trip date:',
@@ -96,6 +202,8 @@
 //     travelerAge: 'Age',
 //     actions: 'Actions',
 //     visitRussia: 'Visit Russia',
+//     annualDays: 'Select number of days:',
+//     dayOptions: 'days',
 //   },
 //   ru: {
 //     insuranceTitle: 'Страхование для визы в Россию',
@@ -189,6 +297,8 @@
 //     travelerAge: 'Возраст',
 //     actions: 'Действия',
 //     visitRussia: 'Visit Russia',
+//     annualDays: 'Kunlar sonini tanlang:',
+//     dayOptions: 'Kunlar:',
 //   },
 //   uz: {
 //     insuranceTitle: 'Rossiyaga viza uchun sugʻurta',
@@ -287,7 +397,46 @@
 //   }
 // };
 
-// const annualDayOptions = [10, 20, 30, 60, 120, 240, 360];
+// const annualDayOptions: number[] = [10, 20, 30, 60, 120, 240, 360];
+
+// // Memoized component for each traveler row to prevent re-rendering of the entire list
+// interface TravelerRowProps {
+//   traveler: Traveler;
+//   t: TranslationKeys;
+//   onTravelerChange: (id: number, field: keyof Traveler, value: string) => void;
+//   onRemoveTraveler: (id: number) => void;
+// }
+
+// const TravelerRow = memo(({ traveler, t, onTravelerChange, onRemoveTraveler }: TravelerRowProps) => {
+//   return (
+//     <div className="flex items-center space-x-2 mb-2">
+//       <input
+//         type="text"
+//         value={traveler.firstName}
+//         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'firstName', e.target.value)}
+//         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+//         placeholder={t.firstName}
+//       />
+//       <input
+//         type="text"
+//         value={traveler.lastName}
+//         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'lastName', e.target.value)}
+//         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+//         placeholder={t.lastName}
+//       />
+//       <input
+//         type="number"
+//         value={traveler.age}
+//         onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'age', e.target.value)}
+//         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
+//         placeholder={t.age}
+//       />
+//       <button onClick={() => onRemoveTraveler(traveler.id)} className="text-red-500 p-2 hover:bg-red-100 rounded-full transition-colors">
+//         <X size={20} />
+//       </button>
+//     </div>
+//   );
+// });
 
 // const App = () => {
 //   // State for language and form inputs
@@ -295,27 +444,27 @@
 //   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
 //   const [firstDate, setFirstDate] = useState('2025-08-15');
 //   const [lastDate, setLastDate] = useState('2025-08-23');
-//   const [travelers, setTravelers] = useState([{ id: 1, firstName: '', lastName: '', age: '30' }]);
+//   const [travelers, setTravelers] = useState<Traveler[]>([{ id: 1, firstName: '', lastName: '', age: '30' }]);
 //   const [isAnnualPolicy, setIsAnnualPolicy] = useState(false);
-//   const [selectedAnnualDays, setSelectedAnnualDays] = useState(annualDayOptions[0]);
+//   const [selectedAnnualDays, setSelectedAnnualDays] = useState<number>(annualDayOptions[0]);
 
 //   // State for calculated values
-//   const [coverage, setCoverage] = useState(35000);
-//   const [days, setDays] = useState(9);
-//   const [insurancePremium, setInsurancePremium] = useState(0);
-//   const [visaFeeEstimate, setVisaFeeEstimate] = useState(0);
-//   const [serviceFee, setServiceFee] = useState(0);
-//   const [totalEstimate, setTotalEstimate] = useState(0);
+//   const [coverage, setCoverage] = useState<number>(35000);
+//   const [days, setDays] = useState<number>(9);
+//   const [insurancePremium, setInsurancePremium] = useState<number>(0);
+//   const [visaFeeEstimate, setVisaFeeEstimate] = useState<number>(0);
+//   const [serviceFee, setServiceFee] = useState<number>(0);
+//   const [totalEstimate, setTotalEstimate] = useState<number>(0);
 
 //   // States for UI elements and LLM
-//   const [itinerary, setItinerary] = useState(null);
-//   const [isLoading, setIsLoading] = useState(false);
-//   const [showVisaModal, setShowVisaModal] = useState(false);
-//   const [showFaq, setShowFaq] = useState(false);
-//   const [showCoverage, setShowCoverage] = useState(false);
-//   const [currentPage, setCurrentPage] = useState('main');
+//   const [itinerary, setItinerary] = useState<string | null>(null);
+//   const [isLoading, setIsLoading] = useState<boolean>(false);
+//   const [showVisaModal, setShowVisaModal] = useState<boolean>(false);
+//   const [showFaq, setShowFaq] = useState<boolean>(false);
+//   const [showCoverage, setShowCoverage] = useState<boolean>(false);
+//   const [currentPage, setCurrentPage] = useState<'main' | 'calculator'>('main');
 
-//   const t = translations[language];
+//   const t: TranslationKeys = translations[language];
 
 //   // --- useEffect hooks for data persistence and calculations ---
 
@@ -345,7 +494,7 @@
 //     localStorage.setItem('travelers', JSON.stringify(travelers));
 //     localStorage.setItem('firstDate', firstDate);
 //     localStorage.setItem('lastDate', lastDate);
-//     localStorage.setItem('isAnnualPolicy', isAnnualPolicy);
+//     localStorage.setItem('isAnnualPolicy', isAnnualPolicy.toString()); // Convert boolean to string for localStorage
 //     localStorage.setItem('selectedAnnualDays', JSON.stringify(selectedAnnualDays));
 //   }, [travelers, firstDate, lastDate, isAnnualPolicy, selectedAnnualDays]);
 
@@ -387,13 +536,14 @@
 
 //   // --- Helper functions ---
 
-//   const getFlagEmoji = (lang) => {
+//   const getFlagEmoji = (lang: string): string => {
 //     if (lang === 'en') return '🇺🇸'; // or 🇬🇧
 //     if (lang === 'ru') return '🇷🇺';
 //     if (lang === 'uz') return '🇺🇿';
+//     return '🇺🇿'; // Default
 //   };
 
-//   const handleLanguageChange = (lang) => {
+//   const handleLanguageChange = (lang: 'en' | 'ru' | 'uz') => {
 //     setLanguage(lang);
 //     setShowLanguageDropdown(false);
 //   };
@@ -407,23 +557,24 @@
 //     setTravelers(prevTravelers => [...prevTravelers, { id: Date.now(), firstName: '', lastName: '', age: '' }]);
 //   };
 
-//   const handleRemoveTraveler = (id) => {
+//   const handleRemoveTraveler = (id: number) => {
 //     setTravelers(prevTravelers => prevTravelers.filter(traveler => traveler.id !== id));
 //   };
 
-//   const handleTravelerChange = (id, field, value) => {
+//   // Callback to handle traveler data changes efficiently
+//   const handleTravelerChange = useCallback((id: number, field: keyof Traveler, value: string) => {
 //     setTravelers(prevTravelers =>
 //       prevTravelers.map(traveler =>
 //         traveler.id === id ? { ...traveler, [field]: value } : traveler
 //       )
 //     );
-//   };
+//   }, []);
 
 //   const handleGenerateItinerary = async () => {
 //     setIsLoading(true);
 //     setItinerary(null);
 //     try {
-//       const travelerDetails = travelers.map(t => `${t.firstName} ${t.lastName} (${t.age} ${t.years})`).join(', ');
+//       const travelerDetails = travelers.map(t => `${t.firstName} ${t.lastName} (${t.age})`).join(', ');
 //       const prompt = `Create a ${days}-day trip plan for a trip to Russia for the following travelers: ${travelerDetails}. Include a day-by-day breakdown with suggestions for activities, dining, and cultural experiences. Do not include price information. Format the response as a markdown list with headings for each day.`;
 
 //       const chatHistory = [];
@@ -442,7 +593,7 @@
 //       }
 
 //       const result = await response.json();
-//       const text = result?.candidates?.[0]?.content?.parts?.[0]?.text;
+//       const text = result?.candidates?.[0]?.content?.parts?.[0]?.text as string | undefined;
 
 //       if (text) {
 //         setItinerary(text);
@@ -462,7 +613,13 @@
 //     setShowVisaModal(true);
 //   };
 
-//   const Modal = ({ title, content, onClose }) => {
+//   interface ModalProps {
+//     title: string;
+//     content: string;
+//     onClose: () => void;
+//   }
+
+//   const Modal = ({ title, content, onClose }: ModalProps) => {
 //     return (
 //       <div className="fixed inset-0 bg-gray-600 bg-opacity-50 overflow-y-auto h-full w-full flex items-center justify-center z-50">
 //         <div className="relative p-5 border w-11/12 md:w-1/2 lg:w-1/3 shadow-lg rounded-md bg-white">
@@ -505,7 +662,7 @@
 //                 type="checkbox"
 //                 id="annualPolicy"
 //                 checked={isAnnualPolicy}
-//                 onChange={(e) => {
+//                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => {
 //                   setIsAnnualPolicy(e.target.checked);
 //                   // Reset dates if switching to non-annual
 //                   if (!e.target.checked) {
@@ -525,10 +682,10 @@
 //               <div className="relative">
 //                 <select
 //                   value={selectedAnnualDays}
-//                   onChange={(e) => setSelectedAnnualDays(Number(e.target.value))}
+//                   onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setSelectedAnnualDays(Number(e.target.value))}
 //                   className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 appearance-none pr-10"
 //                 >
-//                   {annualDayOptions.map(day => (
+//                   {annualDayOptions.map((day: number) => (
 //                     <option key={day} value={day}>{day} {t.dayOptions}</option>
 //                   ))}
 //                 </select>
@@ -543,7 +700,7 @@
 //                   <input
 //                     type="date"
 //                     value={firstDate}
-//                     onChange={(e) => setFirstDate(e.target.value)}
+//                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setFirstDate(e.target.value)}
 //                     className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 appearance-none pr-10"
 //                   />
 //                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
@@ -555,7 +712,7 @@
 //                   <input
 //                     type="date"
 //                     value={lastDate}
-//                     onChange={(e) => setLastDate(e.target.value)}
+//                     onChange={(e: React.ChangeEvent<HTMLInputElement>) => setLastDate(e.target.value)}
 //                     className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600 appearance-none pr-10"
 //                   />
 //                   <Calendar className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none" size={20} />
@@ -571,35 +728,14 @@
 
 //           <div className="mb-6">
 //             <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">{t.travelers} ({travelers.length})</label>
-//             {travelers.map((traveler) => (
-//               <div key={traveler.id} className="flex items-center space-x-2 mb-2">
-//                 <input
-//                   type="text"
-
-//                   value={traveler.firstName}
-//                   onChange={(e) => handleTravelerChange(traveler.id, 'firstName', e.target.value)}
-//                   className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-//                   placeholder={t.firstName}
-//                 />
-//                 <input
-//                   type="text"
-
-//                   value={traveler.lastName}
-//                   onChange={(e) => handleTravelerChange(traveler.id, 'lastName', e.target.value)}
-//                   className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-//                   placeholder={t.lastName}
-//                 />
-//                 <input
-//                   type="number"
-//                   value={traveler.age}
-//                   onChange={(e) => handleTravelerChange(traveler.id, 'age', e.target.value)}
-//                   className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
-//                   placeholder={t.age}
-//                 />
-//                 <button onClick={() => handleRemoveTraveler(traveler.id)} className="text-red-500 p-2 hover:bg-red-100 rounded-full transition-colors">
-//                   <X size={20} />
-//                 </button>
-//               </div>
+//             {travelers.map((traveler: Traveler) => (
+//               <TravelerRow
+//                 key={traveler.id}
+//                 traveler={traveler}
+//                 t={t}
+//                 onTravelerChange={handleTravelerChange}
+//                 onRemoveTraveler={handleRemoveTraveler}
+//               />
 //             ))}
 //             <button
 //               onClick={handleAddTraveler}
@@ -696,7 +832,7 @@
 //                 </tr>
 //               </thead>
 //               <tbody className="bg-white divide-y divide-gray-200">
-//                 {travelers.map((traveler) => (
+//                 {travelers.map((traveler: Traveler) => (
 //                   <tr key={traveler.id} className="hover:bg-blue-50 transition-colors">
 //                     <td className="px-6 py-4 whitespace-nowrap">
 //                       <div className="flex items-center">
@@ -808,7 +944,7 @@
 //             <input
 //               type="number"
 //               value={insurancePremium}
-//               onChange={(e) => setInsurancePremium(e.target.value)}
+//               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setInsurancePremium(Number(e.target.value))}
 //               className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
 //             />
 //           </div>
@@ -817,7 +953,7 @@
 //             <input
 //               type="number"
 //               value={visaFeeEstimate}
-//               onChange={(e) => setVisaFeeEstimate(e.target.value)}
+//               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setVisaFeeEstimate(Number(e.target.value))}
 //               className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
 //             />
 //           </div>
@@ -826,7 +962,7 @@
 //             <input
 //               type="number"
 //               value={serviceFee}
-//               onChange={(e) => setServiceFee(e.target.value)}
+//               onChange={(e: React.ChangeEvent<HTMLInputElement>) => setServiceFee(Number(e.target.value))}
 //               className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
 //             />
 //           </div>
@@ -894,13 +1030,13 @@
 //             {showLanguageDropdown && (
 //               <div className="absolute right-0 mt-2 w-40 bg-white rounded-md shadow-lg py-1 z-30">
 //                 <button onClick={() => handleLanguageChange('uz')} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-//                   <span className="text-lg mr-2">u🇿</span> O'zbekcha
+//                   <span className="text-lg mr-2">🇺🇿</span> O'zbekcha
 //                 </button>
 //                 <button onClick={() => handleLanguageChange('ru')} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
 //                   <span className="text-lg mr-2">🇷🇺</span> Русский
 //                 </button>
 //                 <button onClick={() => handleLanguageChange('en')} className="flex items-center w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
-//                   <span className="text-lg mr-2">En</span> English
+//                   <span className="text-lg mr-2">🇺🇸</span> English
 //                 </button>
 //               </div>
 //             )}
@@ -1039,7 +1175,10 @@
 
 
 
-import React, { useState, useEffect, useCallback, memo } from 'react';
+
+
+
+import React, { useState, useEffect, useRef, memo } from 'react';
 import { Calendar, MapPin, Users, Home, Calculator, User, Wifi, Battery, Signal, PhoneCall, Globe, Sparkles, Facebook, Instagram, Phone, Mail, ChevronDown, ChevronUp, X, ChevronLeft, Trash2, ChevronRight, Menu, Check } from 'lucide-react';
 import { differenceInDays, parse } from 'date-fns';
 
@@ -1146,6 +1285,7 @@ interface TranslationKeys {
   visitRussia: string;
   annualDays: string;
   dayOptions: string;
+  fillAllFieldsError: string;
 }
 
 // Language translations object with explicit types
@@ -1244,6 +1384,7 @@ const translations: { [key: string]: TranslationKeys } = {
     visitRussia: 'Visit Russia',
     annualDays: 'Select number of days:',
     dayOptions: 'days',
+    fillAllFieldsError: 'Please fill in all traveler details (First Name, Last Name, and Age).'
   },
   ru: {
     insuranceTitle: 'Страхование для визы в Россию',
@@ -1339,6 +1480,7 @@ const translations: { [key: string]: TranslationKeys } = {
     visitRussia: 'Visit Russia',
     annualDays: 'Kunlar sonini tanlang:',
     dayOptions: 'Kunlar:',
+    fillAllFieldsError: 'Пожалуйста, заполните все данные о путешественниках (Имя, Фамилия и Возраст).'
   },
   uz: {
     insuranceTitle: 'Rossiyaga viza uchun sugʻurta',
@@ -1434,6 +1576,7 @@ const translations: { [key: string]: TranslationKeys } = {
     visitRussia: 'Visit Russia',
     annualDays: 'Kunlar sonini tanlang:',
     dayOptions: 'Kunlar:',
+    fillAllFieldsError: 'Iltimos, barcha sayohatchilar maʼlumotlarini (Ism, Familiya va Yosh) toʻldiring.'
   }
 };
 
@@ -1443,31 +1586,56 @@ const annualDayOptions: number[] = [10, 20, 30, 60, 120, 240, 360];
 interface TravelerRowProps {
   traveler: Traveler;
   t: TranslationKeys;
-  onTravelerChange: (id: number, field: keyof Traveler, value: string) => void;
   onRemoveTraveler: (id: number) => void;
+  // Use a ref object to store the input fields for each traveler
+  inputRefs: React.MutableRefObject<{[id: number]: {firstName: HTMLInputElement | null, lastName: HTMLInputElement | null, age: HTMLInputElement | null}}>;
 }
 
-const TravelerRow = memo(({ traveler, t, onTravelerChange, onRemoveTraveler }: TravelerRowProps) => {
+// React.memo is used here, but the core logic for state updates on typing has been moved
+// to the `useRef` approach in the parent component.
+const TravelerRow = memo(({ traveler, t, onRemoveTraveler, inputRefs }: TravelerRowProps) => {
+  // We use a local ref for the current traveler's inputs
+  // The refs are assigned in the parent component's useEffect
+  const firstNameRef = useRef<HTMLInputElement>(null);
+  const lastNameRef = useRef<HTMLInputElement>(null);
+  const ageRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    // We add the refs to the parent's ref object when the component mounts
+    // and clean them up when it unmounts.
+    if (firstNameRef.current && lastNameRef.current && ageRef.current) {
+        inputRefs.current[traveler.id] = {
+            firstName: firstNameRef.current,
+            lastName: lastNameRef.current,
+            age: ageRef.current
+        };
+    }
+    return () => {
+        delete inputRefs.current[traveler.id];
+    };
+  }, [traveler.id, inputRefs]);
+
+
   return (
     <div className="flex items-center space-x-2 mb-2">
       <input
         type="text"
-        value={traveler.firstName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'firstName', e.target.value)}
+        ref={firstNameRef}
+        defaultValue={traveler.firstName}
         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
         placeholder={t.firstName}
       />
       <input
         type="text"
-        value={traveler.lastName}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'lastName', e.target.value)}
+        ref={lastNameRef}
+        defaultValue={traveler.lastName}
         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
         placeholder={t.lastName}
       />
       <input
         type="number"
-        value={traveler.age}
-        onChange={(e: React.ChangeEvent<HTMLInputElement>) => onTravelerChange(traveler.id, 'age', e.target.value)}
+        ref={ageRef}
+        defaultValue={traveler.age}
         className="w-full p-3 border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-blue-600"
         placeholder={t.age}
       />
@@ -1480,13 +1648,18 @@ const TravelerRow = memo(({ traveler, t, onTravelerChange, onRemoveTraveler }: T
 
 const App = () => {
   // State for language and form inputs
-  const [language, setLanguage] = useState<'en' | 'ru' | 'uz'>('uz');
+  const [language, setLanguage] = useState<'en' | 'ru' | 'uz'>('ru'); // Default language set to Russian ('ru')
   const [showLanguageDropdown, setShowLanguageDropdown] = useState(false);
   const [firstDate, setFirstDate] = useState('2025-08-15');
   const [lastDate, setLastDate] = useState('2025-08-23');
-  const [travelers, setTravelers] = useState<Traveler[]>([{ id: 1, firstName: '', lastName: '', age: '30' }]);
+  // `committedTravelers` - "Hisoblash" tugmasi bosilganda yangilanadigan state
+  const [committedTravelers, setCommittedTravelers] = useState<Traveler[]>([{ id: 1, firstName: '', lastName: '', age: '30' }]);
   const [isAnnualPolicy, setIsAnnualPolicy] = useState(false);
   const [selectedAnnualDays, setSelectedAnnualDays] = useState<number>(annualDayOptions[0]);
+
+  // `inputRefs` - bu input maydonlarining joriy qiymatlarini saqlash uchun useRef
+  // Bu state yangilanmaydi, shuning uchun yozish paytida qayta render bo'lmaydi
+  const inputRefs = useRef<{[id: number]: {firstName: HTMLInputElement | null, lastName: HTMLInputElement | null, age: HTMLInputElement | null}}>({});
 
   // State for calculated values
   const [coverage, setCoverage] = useState<number>(35000);
@@ -1499,6 +1672,7 @@ const App = () => {
   // States for UI elements and LLM
   const [itinerary, setItinerary] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState<boolean>(false);
+  const [validationError, setValidationError] = useState<string | null>(null);
   const [showVisaModal, setShowVisaModal] = useState<boolean>(false);
   const [showFaq, setShowFaq] = useState<boolean>(false);
   const [showCoverage, setShowCoverage] = useState<boolean>(false);
@@ -1513,7 +1687,7 @@ const App = () => {
     try {
       const savedTravelers = localStorage.getItem('travelers');
       if (savedTravelers) {
-        setTravelers(JSON.parse(savedTravelers));
+        setCommittedTravelers(JSON.parse(savedTravelers));
       }
       const savedFirstDate = localStorage.getItem('firstDate');
       if (savedFirstDate) setFirstDate(savedFirstDate);
@@ -1531,14 +1705,14 @@ const App = () => {
 
   // Save data to localStorage whenever it changes
   useEffect(() => {
-    localStorage.setItem('travelers', JSON.stringify(travelers));
+    localStorage.setItem('travelers', JSON.stringify(committedTravelers));
     localStorage.setItem('firstDate', firstDate);
     localStorage.setItem('lastDate', lastDate);
-    localStorage.setItem('isAnnualPolicy', isAnnualPolicy.toString()); // Convert boolean to string for localStorage
+    localStorage.setItem('isAnnualPolicy', isAnnualPolicy.toString());
     localStorage.setItem('selectedAnnualDays', JSON.stringify(selectedAnnualDays));
-  }, [travelers, firstDate, lastDate, isAnnualPolicy, selectedAnnualDays]);
+  }, [committedTravelers, firstDate, lastDate, isAnnualPolicy, selectedAnnualDays]);
 
-  // Effect to calculate the number of days and update premiums
+  // Effect to calculate the number of days and update premiums based on committed travelers
   useEffect(() => {
     let calculatedDays = 0;
     if (isAnnualPolicy) {
@@ -1554,18 +1728,18 @@ const App = () => {
     }
     setDays(calculatedDays > 0 ? calculatedDays : 0);
 
-    // Update costs based on new days and travelers count (Figma values)
+    // Update costs based on new days and committed travelers count
     const basePricePerDay = isAnnualPolicy ? 0 : 5;
     const basePricePerTraveler = 50;
-    const calculatedInsurancePremium = (calculatedDays * basePricePerDay) * travelers.length + (travelers.length * basePricePerTraveler);
-    const calculatedVisaFeeEstimate = travelers.length * 150; // Example from Figma
-    const calculatedServiceFee = travelers.length * 50; // Example from Figma
+    const calculatedInsurancePremium = (calculatedDays * basePricePerDay) * committedTravelers.length + (committedTravelers.length * basePricePerTraveler);
+    const calculatedVisaFeeEstimate = committedTravelers.length * 150;
+    const calculatedServiceFee = committedTravelers.length * 50;
 
     setInsurancePremium(calculatedInsurancePremium);
     setVisaFeeEstimate(calculatedVisaFeeEstimate);
     setServiceFee(calculatedServiceFee);
 
-  }, [firstDate, lastDate, travelers, isAnnualPolicy, selectedAnnualDays]);
+  }, [firstDate, lastDate, committedTravelers, isAnnualPolicy, selectedAnnualDays]);
 
   // Effect to update total estimate
   useEffect(() => {
@@ -1576,8 +1750,8 @@ const App = () => {
 
   // --- Helper functions ---
 
-  const getFlagEmoji = (lang: string): string => {
-    if (lang === 'en') return '🇺🇸'; // or 🇬🇧
+  const getFlagEmoji = (lang: 'en' | 'ru' | 'uz'): string => {
+    if (lang === 'en') return '🇺🇸';
     if (lang === 'ru') return '🇷🇺';
     if (lang === 'uz') return '🇺🇿';
     return '🇺🇿'; // Default
@@ -1588,33 +1762,56 @@ const App = () => {
     setShowLanguageDropdown(false);
   };
 
+  // "Hisoblash" tugmasi bosilganda chaqiriladi
   const handleCalculate = () => {
-    const ageSum = travelers.reduce((sum, traveler) => sum + (Number.parseInt(traveler.age) || 0), 0);
+    // useRef yordamida input maydonlarining joriy qiymatlarini o'qish
+    const newTravelers: Traveler[] = Object.values(inputRefs.current).map(ref => ({
+      id: 0, // Id will be updated below
+      firstName: ref?.firstName?.value || '',
+      lastName: ref?.lastName?.value || '',
+      age: ref?.age?.value || ''
+    }));
+
+    // Barcha maydonlarning to'ldirilganligini tekshirish
+    const allFieldsFilled = newTravelers.every(t => t.firstName.trim() && t.lastName.trim() && t.age.trim());
+    if (!allFieldsFilled) {
+      setValidationError(t.fillAllFieldsError);
+      setTimeout(() => setValidationError(null), 5000);
+      return;
+    }
+
+    // `committedTravelers` state ni yangilash
+    // Bu faqat barcha maydonlar to'ldirilgandagina sodir bo'ladi
+    setCommittedTravelers(newTravelers.map((t, index) => ({...t, id: index + 1})));
+
+    const ageSum = newTravelers.reduce((sum, traveler) => sum + (Number.parseInt(traveler.age) || 0), 0);
     setCoverage(30000 + days * 100 + ageSum * 50);
   };
 
+
   const handleAddTraveler = () => {
-    setTravelers(prevTravelers => [...prevTravelers, { id: Date.now(), firstName: '', lastName: '', age: '' }]);
+    setCommittedTravelers(prevTravelers => [...prevTravelers, { id: Date.now(), firstName: '', lastName: '', age: '' }]);
   };
 
   const handleRemoveTraveler = (id: number) => {
-    setTravelers(prevTravelers => prevTravelers.filter(traveler => traveler.id !== id));
+    setCommittedTravelers(prevTravelers => prevTravelers.filter(traveler => traveler.id !== id));
   };
 
-  // Callback to handle traveler data changes efficiently
-  const handleTravelerChange = useCallback((id: number, field: keyof Traveler, value: string) => {
-    setTravelers(prevTravelers =>
-      prevTravelers.map(traveler =>
-        traveler.id === id ? { ...traveler, [field]: value } : traveler
-      )
-    );
-  }, []);
-
   const handleGenerateItinerary = async () => {
+    // Input maydonlarini tekshirish
+    const allFieldsFilled = committedTravelers.every(t => t.firstName.trim() && t.lastName.trim() && t.age.trim());
+    if (!allFieldsFilled) {
+      setValidationError(t.fillAllFieldsError);
+      // Xato xabarini 5 soniyadan so'ng yashirish
+      setTimeout(() => setValidationError(null), 5000);
+      return;
+    }
+
     setIsLoading(true);
     setItinerary(null);
+    setValidationError(null); // Agar avval xato bo'lsa, uni tozalash
     try {
-      const travelerDetails = travelers.map(t => `${t.firstName} ${t.lastName} (${t.age})`).join(', ');
+      const travelerDetails = committedTravelers.map(traveler => `${traveler.firstName} ${traveler.lastName} (${traveler.age} ${t.years})`).join(', ');
       const prompt = `Create a ${days}-day trip plan for a trip to Russia for the following travelers: ${travelerDetails}. Include a day-by-day breakdown with suggestions for activities, dining, and cultural experiences. Do not include price information. Format the response as a markdown list with headings for each day.`;
 
       const chatHistory = [];
@@ -1767,14 +1964,14 @@ const App = () => {
           </div>
 
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">{t.travelers} ({travelers.length})</label>
-            {travelers.map((traveler: Traveler) => (
+            <label className="block text-sm font-medium text-gray-700 mb-2 flex items-center">{t.travelers} ({committedTravelers.length})</label>
+            {committedTravelers.map((traveler: Traveler) => (
               <TravelerRow
                 key={traveler.id}
                 traveler={traveler}
                 t={t}
-                onTravelerChange={handleTravelerChange}
                 onRemoveTraveler={handleRemoveTraveler}
+                inputRefs={inputRefs}
               />
             ))}
             <button
@@ -1784,6 +1981,7 @@ const App = () => {
               {t.addTraveler}
             </button>
           </div>
+          {/* Faqat hisoblash tugmasini bosganda state yangilanadi */}
           <button
             onClick={handleCalculate}
             className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition-colors text-lg"
@@ -1872,7 +2070,7 @@ const App = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {travelers.map((traveler: Traveler) => (
+                {committedTravelers.map((traveler: Traveler) => (
                   <tr key={traveler.id} className="hover:bg-blue-50 transition-colors">
                     <td className="px-6 py-4 whitespace-nowrap">
                       <div className="flex items-center">
@@ -1927,6 +2125,11 @@ const App = () => {
           {t.llmTitle}
         </h3>
         <p className="text-sm text-gray-600 mb-4">{t.llmDescription}</p>
+        {validationError && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-4" role="alert">
+            <span className="block sm:inline">{validationError}</span>
+          </div>
+        )}
         <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-4">
           <button
             onClick={handleGenerateItinerary}
