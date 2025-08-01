@@ -1614,7 +1614,7 @@ const App = () => {
     setIsLoading(true);
     setItinerary(null);
     try {
-      const travelerDetails = travelers.map(t => `${t.firstName} ${t.lastName} (${t.age} ${t.years})`).join(', ');
+      const travelerDetails = travelers.map(t => `${t.firstName} ${t.lastName} (${t.age})`).join(', ');
       const prompt = `Create a ${days}-day trip plan for a trip to Russia for the following travelers: ${travelerDetails}. Include a day-by-day breakdown with suggestions for activities, dining, and cultural experiences. Do not include price information. Format the response as a markdown list with headings for each day.`;
 
       const chatHistory = [];
